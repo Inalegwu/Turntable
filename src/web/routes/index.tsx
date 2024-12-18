@@ -17,14 +17,14 @@ function Index() {
       align="center"
       gap="4"
       justify="center"
-      className="h-screen w-full px-8"
+      className="h-screen w-full px-6"
     >
       {stage.length === 0 && (
         <Flex direction="column" align="center" gap="3">
           <Flex direction="column" align="center" justify="center">
             <Text size="6">Stage is currently empty</Text>
             <Text size="3" color="gray">
-              Add your apps to begin transferring
+              Add apps to begin transferring
             </Text>
           </Flex>
           <SelectButton />

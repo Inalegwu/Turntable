@@ -51,7 +51,7 @@ const ProviderCard = memo(({ provider }: Props) => {
       className="bg-neutral-50/80 overflow-hidden shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
     >
       <Flex
-        className="px-2 py-3 fixed w-89"
+        className="px-2 py-3 fixed w-91.4"
         gap="3"
         align="center"
         justify="between"
