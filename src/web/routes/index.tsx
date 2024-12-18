@@ -36,7 +36,7 @@ function Index() {
             <Flex
               direction="column"
               gap="1"
-              className="bg-neutral-600/10 p-1 rounded-md cursor-pointer"
+              className="bg-neutral-600/5 p-1 rounded-md cursor-pointer"
             >
               <img
                 src={findProviderIcon(provider)}

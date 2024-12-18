@@ -50,7 +50,7 @@ export default function Layout({ children }: LayoutProps) {
         align="center"
         justify="between"
         width="100%"
-        className="absolute px-3 py-3"
+        className="absolute px-3 py-2"
       >
         <Flex
           id="drag-region"
@@ -61,8 +61,8 @@ export default function Layout({ children }: LayoutProps) {
           p="3"
         />
         <Flex align="center" justify="end" gap="4">
-          <button className="text-neutral-50" onClick={() => minimizeWindow()}>
-            <Icon name="Minimize" size={10} />
+          <button className="text-neutral-600" onClick={() => minimizeWindow()}>
+            <Icon name="Minus" size={10} />
           </button>
           <button onClick={() => closeWindow()} className="text-red-600">
             <Icon name="X" size={10} />
