@@ -4,7 +4,7 @@ import t from "@src/shared/config";
 import { capitalize, findProviderIcon } from "@src/shared/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useCallback } from "react";
-import { authenticated$, transferState$ } from "../state";
+import { authenticated$, stage$, transferState$ } from "../state";
 import Icon from "./icon";
 
 type Props = {
@@ -37,6 +37,10 @@ const ProviderCard = memo(({ provider }: Props) => {
     [transferState, provider],
   );
 
+  const removeProviderFromStage = () => {
+    stage$.providers.delete(provider);
+  };
+
   return (
     <motion.div
       initial={false}
@@ -62,7 +66,7 @@ const ProviderCard = memo(({ provider }: Props) => {
             {capitalize(provider)}
           </Text>
         </Flex>
-        <Flex align="center" justify="end" gap="3">
+        <Flex align="center" justify="end" gap="2">
           {!authenticated$.providers.has(provider) && (
             <Button
               size="1"
@@ -83,6 +87,14 @@ const ProviderCard = memo(({ provider }: Props) => {
               name={isExpandedValue ? "ChevronUp" : "ChevronDown"}
               size={11}
             />
+          </Button>
+          <Button
+            onClick={removeProviderFromStage}
+            variant="soft"
+            className="cursor-pointer"
+            size="1"
+          >
+            <Icon name="X" size={11} />
           </Button>
         </Flex>
       </Flex>
@@ -105,7 +117,6 @@ const ProviderCard = memo(({ provider }: Props) => {
                 <Select.Root
                   onValueChange={(value) => addToTransferState(value as State)}
                   size="1"
-                  defaultValue="source"
                 >
                   <Select.Trigger variant="soft" />
                   <Select.Content color="gray" variant="soft">
@@ -124,70 +135,6 @@ const ProviderCard = memo(({ provider }: Props) => {
       </AnimatePresence>
     </motion.div>
   );
-  // return (
-  //   <Flex
-  //     direction="column"
-  //     className="w-3/6 h-4/6 shadow shadow-sm bg-white dark:bg-neutral-800 border-1 border-solid border-neutral-400/10 dark:border-neutral-700 rounded-md"
-  //   >
-  //     <Flex
-  //       width="100%"
-  //       align="center"
-  //       justify="between"
-  //       className="h-[11%] px-2 dark:border-b-neutral-100/8 border-b-neutral-300/20 border-b-1 border-b-solid"
-  //     >
-  //       <Flex
-  //         direction="column"
-  //         gap="1"
-  //         className="bg-neutral-900/6 p-1 rounded-md cursor-pointer shadow shadow-sm"
-  //       >
-  //         <img
-  //           src={findProviderIcon(provider)}
-  //           className="w-5.5 h-5.5"
-  //           alt={`${provider}_logo`}
-  //         />
-  //       </Flex>
-  //       <Flex align="center" justify="end" gap="1">
-  //         <Select.Root
-  //           onValueChange={(value) => addToTransferState(value as State)}
-  //           size="1"
-  //         >
-  //           <Select.Trigger className="cursor-pointer" variant="soft" />
-  //           <Select.Content variant="soft">
-  //             <Select.Item value="source">Source</Select.Item>
-  //             <Select.Item value="destination">Destination</Select.Item>
-  //           </Select.Content>
-  //         </Select.Root>
-  //         {!authenticated$.providers.has(provider) && (
-  //           <>
-  //             <Button
-  //               onClick={() => attemptOAuth({ provider })}
-  //               className="cursor-pointer"
-  //               size="1"
-  //               variant="soft"
-  //             >
-  //               <Text weight="bold">Connect Account</Text>
-  //             </Button>
-  //           </>
-  //         )}
-  //       </Flex>
-  //     </Flex>
-  //     <Flex grow="1" width="100%" justify="between" direction="column">
-  //       <Flex grow="1" className="px-2 py-2">
-  //         <Text size="3" color="gray">
-  //           My {capitalize(provider)}
-  //         </Text>
-  //       </Flex>
-  //       <Flex width="100%" align="center" justify="end">
-  //         <button
-  //           onClick={() => stage$.providers.delete(provider)}
-  //           className="text-neutral-400 flex items-center justify-center space-x-1 py-2 px-2"
-  //         >
-  //           <Icon name="X" size={12} />
-  //         </button>
-  //       </Flex>
-  //     </Flex>
-  //   </Flex>
-  // );
 });
 
 export default ProviderCard;
