@@ -5,7 +5,8 @@ import { Provider } from "../validations";
 export const oauth = router({
     attemptOAuth: publicProcedure.input(z.object({
         provider: Provider,
-    })).mutation(async ({ ctx, input }) => {
+    })).mutation(async ({ input }) => {
+        console.log(input);
         switch (input.provider) {
             case "spotify": {
                 return;

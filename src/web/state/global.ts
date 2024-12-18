@@ -15,10 +15,21 @@ export const globalState$ = observable<GlobalState>({
   firstLaunch: false,
 });
 
-export const stage$ = observable<{
-  providers: Array<Provider>;
+type Authenticated = {
+  authenticated: boolean;
+  provider: Provider;
+};
+
+export const authenticated$ = observable<{
+  providers: Map<Provider, Authenticated>;
 }>({
-  providers: [],
+  providers: new Map<Provider, Authenticated>(),
+});
+
+export const stage$ = observable<{
+  providers: Set<Provider>;
+}>({
+  providers: new Set<Provider>(),
 });
 
 persistObservable(globalState$, {

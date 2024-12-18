@@ -1,11 +1,21 @@
 @font-face {
   font-family: Font;
-  src: url("../assets/fonts/SF-Compact-Display-Medium.ttf");
+  src: url("../assets/fonts/SF-Pro-Rounded-Light.ttf");
 }
 
 @font-face {
   font-family: Font;
-  src: url("../assets/fonts/SF-Compact-Display-Regular.ttf");
+  src: url("../assets/fonts/SF-Pro-Rounded-Medium.ttf");
+}
+
+@font-face {
+  font-family: Font;
+  src: url("../assets/fonts/SF-Pro-Rounded-Regular.ttf");
+}
+
+@font-face {
+  font-family: Font;
+  src: url("../assets/fonts/SF-Pro-Rounded-Semibold.ttf");
 }
 
 * {

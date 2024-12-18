@@ -11,6 +11,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     minWidth: 500,
     minHeight: 500,
+    resizable: false,
     frame: false,
     webPreferences: {
       sandbox: false,
