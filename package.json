@@ -2,14 +2,7 @@
   "name": "Turntables",
   "description": "Transfer playlists with ease",
   "version": "0.0.1",
-  "author": {
-    "email": "youremail@provider.com",
-    "name": "your_name"
-  },
   "license": "MIT",
-  "repository": {
-    "url": "https://github.com/Inalegwu/ElectroStatic.git"
-  },
   "main": "out/main/main.js",
   "scripts": {
     "start": "electron-vite preview",

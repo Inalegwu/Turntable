@@ -32,6 +32,11 @@ export const stage$ = observable<{
   providers: new Set<Provider>(),
 });
 
+export const transferState$ = observable<TransferState>({
+  providers: new Map<Provider, State>(),
+  items: [],
+});
+
 persistObservable(globalState$, {
   local: "global_state",
 });

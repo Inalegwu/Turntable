@@ -1,4 +1,5 @@
 import { Icon } from "@components/index";
+import { useObserveEffect } from "@legendapp/state/react";
 import { Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import t from "@shared/config";
 import { capitalize, providers } from "@src/shared/utils";
@@ -30,11 +31,18 @@ export default function Layout({ children }: LayoutProps) {
         stage$.providers.delete(provider);
         return;
       }
+
       stage$.providers.add(provider);
       return;
     },
     [stage],
   );
+
+  useObserveEffect(() => {
+    if (globalState$.firstLaunch.get()) {
+      globalState$.appId.set(null);
+    }
+  });
 
   useEffect(() => {
     if (globalState$.colorMode.get() === "dark") {
@@ -88,16 +96,11 @@ export default function Layout({ children }: LayoutProps) {
         >
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <Button
-                size="1"
-                variant="soft"
-                className="cursor-pointer"
-                color="gray"
-              >
+              <Button size="1" variant="soft" className="cursor-pointer">
                 <Text>Select a Provider</Text>
               </Button>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content size="1" variant="soft" color="gray">
+            <DropdownMenu.Content size="1" variant="soft">
               {providers
                 .sort((a, b) => (a.provider[0] > b.provider[0] ? 1 : -1))
                 .map((provider) => (

@@ -47,7 +47,7 @@ if (!rootElement?.innerHTML) {
             appearance={globalState$.colorMode.get()}
             radius="large"
             accentColor="gray"
-            grayColor="slate"
+            grayColor="sand"
           >
             <RouterProvider router={router} />
           </Theme>

@@ -1,4 +1,7 @@
-import type { Provider as PValidator } from "@shared/validations";
+import type {
+  Provider as PValidator,
+  State as SValidator,
+} from "@shared/validations";
 import type { z } from "zod";
 
 declare global {
@@ -14,5 +17,12 @@ declare global {
     source: Provider;
     destination: Provider;
     date: string;
+  };
+
+  export type State = z.infer<typeof SValidator>;
+
+  export type TransferState = {
+    providers: Map<Provider, State>;
+    items: Array<string>;
   };
 }
