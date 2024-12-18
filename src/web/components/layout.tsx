@@ -98,25 +98,27 @@ export default function Layout({ children }: LayoutProps) {
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content size="1" variant="soft" color="gray">
-              {providers.map((provider) => (
-                <DropdownMenu.CheckboxItem
-                  className="cursor-pointer"
-                  checked={!!stage$.providers.has(provider.provider)}
-                  onClick={() => addProviderToStage(provider.provider)}
-                  key={`${provider.provider}`}
-                >
-                  <Flex align="center" justify="start" gap="2">
-                    <img
-                      src={provider.img}
-                      className="w-2 h-2"
-                      alt={`${provider.provider}`}
-                    />
-                    <Text size="1" color="gray">
-                      {capitalize(provider.provider)}
-                    </Text>
-                  </Flex>
-                </DropdownMenu.CheckboxItem>
-              ))}
+              {providers
+                .sort((a, b) => (a.provider[0] > b.provider[0] ? 1 : -1))
+                .map((provider) => (
+                  <DropdownMenu.CheckboxItem
+                    className="cursor-pointer"
+                    checked={!!stage$.providers.has(provider.provider)}
+                    onClick={() => addProviderToStage(provider.provider)}
+                    key={`${provider.provider}`}
+                  >
+                    <Flex align="center" justify="start" gap="2">
+                      <img
+                        src={provider.img}
+                        className="w-2 h-2"
+                        alt={`${provider.provider}`}
+                      />
+                      <Text size="1" color="gray">
+                        {capitalize(provider.provider)}
+                      </Text>
+                    </Flex>
+                  </DropdownMenu.CheckboxItem>
+                ))}
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         </Flex>
