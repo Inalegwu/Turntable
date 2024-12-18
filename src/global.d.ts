@@ -1,3 +1,6 @@
+import type { Provider as PValidator } from "@shared/validations";
+import type { z } from "zod";
+
 declare global {
   export type GlobalState = {
     colorMode: "dark" | "light";
@@ -5,7 +8,7 @@ declare global {
     firstLaunch: boolean;
   };
 
-  export type Provider = "spotify" | "youtube";
+  export type Provider = z.infer<typeof PValidator>;
 
   export type Transfer = {
     source: Provider;
@@ -13,5 +16,3 @@ declare global {
     date: string;
   };
 }
-
-export type {};

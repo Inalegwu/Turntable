@@ -21,6 +21,11 @@ export default function Layout({ children }: LayoutProps) {
       console.log("max amount of providers added");
       return;
     }
+    if (stage$.providers.includes(provider)) {
+      console.log("here...");
+      stage$.providers.filter((m) => m.get() === provider);
+      return;
+    }
     stage$.providers.push(provider);
     return;
   }, []);
@@ -53,7 +58,7 @@ export default function Layout({ children }: LayoutProps) {
           align="center"
           justify="center"
           direction="row"
-          p="1"
+          p="3"
         />
         <Flex align="center" justify="end" gap="4">
           <button className="text-neutral-50" onClick={() => minimizeWindow()}>

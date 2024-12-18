@@ -1,6 +1,18 @@
 import { publicProcedure, router } from "@src/trpc";
+import { z } from "zod";
+import { Provider } from "../validations";
 
 export const oauth = router({
-    spotifyOAuth: publicProcedure.mutation(async () => {}),
-    googleOAuth: publicProcedure.mutation(async () => {}),
+    attemptOAuth: publicProcedure.input(z.object({
+        provider: Provider,
+    })).mutation(async ({ ctx, input }) => {
+        switch (input.provider) {
+            case "spotify": {
+                return;
+            }
+            case "youtube": {
+                return;
+            }
+        }
+    }),
 });

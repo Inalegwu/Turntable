@@ -15,6 +15,7 @@ import ReactDOM from "react-dom/client";
 import "virtual:uno.css";
 import "./defaults.css";
 import { routeTree } from "./routeTree.gen";
+import { globalState$ } from "./state";
 
 enableReactTracking({
   auto: true,
@@ -43,7 +44,7 @@ if (!rootElement?.innerHTML) {
       <t.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <Theme
-            appearance="dark"
+            appearance={globalState$.colorMode.get()}
             radius="large"
             accentColor="gray"
             grayColor="slate"
