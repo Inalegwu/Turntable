@@ -97,7 +97,7 @@ export default function Layout({ children }: LayoutProps) {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <Button size="1" variant="soft" className="cursor-pointer">
-                <Text>Select a Provider</Text>
+                <Text weight="bold">Select a Provider</Text>
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content size="1" variant="soft">

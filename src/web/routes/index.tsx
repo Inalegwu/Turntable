@@ -22,8 +22,10 @@ function Index() {
       {stage.length === 0 && (
         <Flex direction="column" align="center" gap="3">
           <Flex direction="column" align="center" justify="center">
-            <Text size="6">Stage is currently empty</Text>
-            <Text size="3" color="gray">
+            <Text size="6" weight="bold">
+              Stage is currently empty
+            </Text>
+            <Text size="3" weight="medium" color="gray">
               Add apps to begin transferring
             </Text>
           </Flex>
@@ -67,7 +69,7 @@ const SelectButton = memo(() => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <Button size="2" variant="soft" className="cursor-pointer">
-          <Text>Select a Provider</Text>
+          <Text weight="bold">Select a Provider</Text>
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content size="2" variant="soft">

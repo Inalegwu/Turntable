@@ -74,7 +74,7 @@ const ProviderCard = memo(({ provider }: Props) => {
               variant="soft"
               onClick={() => attemptOAuth({ provider })}
             >
-              <Text>Connect Account</Text>
+              <Text weight="bold">Connect Account</Text>
             </Button>
           )}
           <Button
@@ -113,7 +113,9 @@ const ProviderCard = memo(({ provider }: Props) => {
               className="w-full h-full px-2 py-2"
             >
               <Flex width="100%" align="center" justify="between">
-                <Text size="2">My {capitalize(provider)} Library</Text>
+                <Text weight="bold" size="2">
+                  My {capitalize(provider)} Library
+                </Text>
                 <Select.Root
                   onValueChange={(value) => addToTransferState(value as State)}
                   size="1"
