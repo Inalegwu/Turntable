@@ -12,7 +12,13 @@ type Props = {
 };
 
 const ProviderCard = memo(({ provider }: Props) => {
-  const { mutate: attemptOAuth } = t.oauth.attemptOAuth.useMutation();
+  const attempt = useObservable(false);
+
+  const { mutate: attemptOAuth, data } = t.oauth.attemptOAuth.useMutation({
+    onSuccess: (data) => {
+      attempt.set(true);
+    },
+  });
 
   const isExpanded = useObservable(false);
   const isExpandedValue = isExpanded.get();
@@ -39,6 +45,7 @@ const ProviderCard = memo(({ provider }: Props) => {
 
   const removeProviderFromStage = () => {
     stage$.providers.delete(provider);
+    return;
   };
 
   return (
@@ -67,14 +74,35 @@ const ProviderCard = memo(({ provider }: Props) => {
           </Text>
         </Flex>
         <Flex align="center" justify="end" gap="2">
+          <AnimatePresence>
+            {attempt.get() && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                exit={{ opacity: 0 }}
+                onClick={() => attempt.set(false)}
+                className="bg-neutral-200 flex items-center justify-center p-1.9 rounded-md text-neutral-500"
+              >
+                <Icon name="RefreshCw" size={10} />
+              </motion.button>
+            )}
+          </AnimatePresence>
           {!authenticated$.providers.has(provider) && (
             <Button
               size="1"
               className="cursor-pointer"
               variant="soft"
+              color={
+                attempt.get() && data?.status === "failed" ? "tomato" : "gray"
+              }
               onClick={() => attemptOAuth({ provider })}
             >
-              <Text weight="bold">Connect Account</Text>
+              <Text weight="bold">
+                {attempt.get() && data?.status === "failed"
+                  ? "Attempt failed"
+                  : "Connect Account"}
+              </Text>
             </Button>
           )}
           <Button

@@ -13,7 +13,7 @@ export const oauth = router({
             }),
         )
         .mutation(async ({ input }) =>
-            Micro.runPromise(handleOAuth(input.provider))
+            Micro.runPromise(handleOAuth(input.provider)).then((res) => res)
         ),
 });
 
@@ -21,6 +21,10 @@ function handleOAuth(provider: Provider) {
     return Micro.tryPromise({
         try: async () => {
             const authWindow = new BrowserWindow({
+                frame: false,
+                autoHideMenuBar: true,
+                width: 300,
+                height: 500,
                 webPreferences: {
                     nodeIntegration: false,
                 },
@@ -59,7 +63,9 @@ function handleOAuth(provider: Provider) {
                         console.log({ code });
                     });
 
-                    return;
+                    return {
+                        status: "failed" as "failed" | "succeeded",
+                    };
                 }
                 case "youtube":
             }
