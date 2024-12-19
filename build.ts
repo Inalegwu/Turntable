@@ -1,10 +1,11 @@
 import { build } from "electron-builder";
 import pkg from "./package.json";
+import { capitalize } from "./src/shared/utils";
 
 build({
   config: {
-    appId: `com.${pkg.name}.app`,
-    productName: pkg.name.toLocaleUpperCase(),
+    appId: `com.${pkg.name.toLowerCase()}.app`,
+    productName: capitalize(pkg.name),
     artifactName: "${productName}-${version}_${platform}_${arch}.${ext}",
     buildDependenciesFromSource: true,
     files: ["out/**/*"],

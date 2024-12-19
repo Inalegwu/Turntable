@@ -20,6 +20,7 @@
     "@trpc/client": "^10.45.2",
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
+    "effect": "^3.11.8",
     "electron-trpc": "^0.5.2",
     "lucide-react": "^0.468.0",
     "motion": "^11.13.1",

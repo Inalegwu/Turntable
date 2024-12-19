@@ -1,22 +1,8 @@
-/* @font-face {
-  font-family: Font;
-  src: url("../assets/fonts/SF-Pro-Rounded-Light.ttf");
-} */
-
 @font-face {
   font-family: Font;
-  src: url("../assets/fonts/SF-Pro-Rounded-Medium.ttf");
+  src: url("../assets/fonts/Nunito-VariableFont_wght.ttf");
 }
-/* 
-@font-face {
-  font-family: Font;
-  src: url("../assets/fonts/SF-Pro-Rounded-Regular.ttf");
-} */
 
-@font-face {
-  font-family: Font;
-  src: url("../assets/fonts/SF-Pro-Rounded-Semibold.ttf");
-}
 
 
 * {
