@@ -37,7 +37,7 @@ function Index() {
       ))}
       {stage.length === 1 && (
         <Flex className="w-2/6" align="center" justify="center">
-          <Text>Add one more to get started</Text>
+          <Text weight="bold">Add one more to get started</Text>
         </Flex>
       )}
     </Flex>

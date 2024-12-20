@@ -11,6 +11,8 @@
     "build": "yarn tsx build.ts"
   },
   "dependencies": {
+    "@effect/platform": "^0.71.6",
+    "@effect/platform-node": "^0.67.2",
     "@electron/rebuild": "^3.6.0",
     "@legendapp/state": "^2.1.14",
     "@million/lint": "^1.0.14",

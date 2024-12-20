@@ -1,4 +1,5 @@
 import { createContext } from "@shared/context";
+import core from "@shared/core/core?nodeWorker";
 import { appRouter } from "@shared/routers/_app";
 import { app, BrowserWindow } from "electron";
 import { createIPCHandler } from "electron-trpc/main";
@@ -34,6 +35,10 @@ const createWindow = () => {
   } else {
     mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
+
+  core({ name: "core-process" }).postMessage({
+    start: true,
+  });
 
   // mainWindow.webContents.openDevTools({ mode: "bottom" });
 };

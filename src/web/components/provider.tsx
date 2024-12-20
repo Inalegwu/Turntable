@@ -27,6 +27,11 @@ const ProviderCard = memo(({ provider }: Props) => {
 
   console.log(transferState);
 
+  const memoAuth = useCallback(
+    (provider: Provider) => attemptOAuth({ provider }),
+    [attemptOAuth],
+  );
+
   const addToTransferState = useCallback(
     (state: State) => {
       if (transferState.has(provider)) {
@@ -96,7 +101,7 @@ const ProviderCard = memo(({ provider }: Props) => {
               color={
                 attempt.get() && data?.status === "failed" ? "tomato" : "gray"
               }
-              onClick={() => attemptOAuth({ provider })}
+              onClick={() => memoAuth(provider)}
             >
               <Text weight="bold">
                 {attempt.get() && data?.status === "failed"
