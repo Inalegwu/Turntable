@@ -52,8 +52,14 @@ const router = HttpRouter.empty.pipe(
 
             console.log(code);
 
+            if (!code) {
+                return yield* HttpServerResponse.json({
+                    success: false,
+                });
+            }
+
             googleAuthChannel.postMessage({
-                token: "",
+                code,
             });
 
             return yield* HttpServerResponse.json({

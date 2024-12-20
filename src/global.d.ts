@@ -26,8 +26,7 @@ declare global {
     items: Array<string>;
   };
 
-  export type GoogleAuthChannel={
-    token:unknown;
-  }
-
+  export type GoogleAuthChannel = {
+    code: string;
+  };
 }

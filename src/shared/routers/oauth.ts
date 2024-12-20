@@ -1,5 +1,6 @@
 import { Env } from "@src/env";
 import { publicProcedure, router } from "@src/trpc";
+import { authenticated$ } from "@src/web/state";
 import { BroadcastChannel } from "broadcast-channel";
 import { Micro } from "effect";
 import { shell } from "electron";
@@ -48,8 +49,6 @@ function handleOAuth(provider: Provider) {
                 case "youtube": {
                     console.log(Env.GOOGLE_AUTH_SCOPES.split(","));
 
-                    var token: string | null = null;
-
                     const url = googleOAuthClient.generateAuthUrl({
                         client_id: Env.GOOGLE_CLIENT_ID,
                         access_type: "offline",
@@ -60,14 +59,21 @@ function handleOAuth(provider: Provider) {
 
                     shell.openExternal(url);
 
-                    googleAuthChannel.onmessage = (e) => {
-                        console.log(e.token);
-                        token = e.token as string;
+                    googleAuthChannel.onmessage = async (e) => {
+                        const { tokens } = await googleOAuthClient.getToken(
+                            e.code,
+                        );
+
+                        googleOAuthClient.setCredentials(tokens);
+
+                        authenticated$.providers.set("youtube", {
+                            authenticated: true,
+                            provider: "youtube",
+                        });
                     };
 
                     return {
                         status: "successful",
-                        token,
                     };
                 }
             }
@@ -75,7 +81,3 @@ function handleOAuth(provider: Provider) {
         catch: (e) => new Error(String(e)),
     });
 }
-
-googleAuthChannel.onmessage = (e) => {
-    console.log(e.token);
-};
