@@ -1,5 +1,12 @@
 import { useObservable } from "@legendapp/state/react";
-import { Button, Flex, Select, Text } from "@radix-ui/themes";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  ScrollArea,
+  Select,
+  Text,
+} from "@radix-ui/themes";
 import t from "@src/shared/config";
 import { capitalize, findProviderIcon } from "@src/shared/utils";
 import { AnimatePresence, motion } from "motion/react";
@@ -13,16 +20,26 @@ type Props = {
 };
 
 const ProviderCard = memo(({ provider }: Props) => {
-  const { mutate: attemptOAuth, isLoading } = t.oauth.attemptOAuth.useMutation(
-    {},
-  );
+  const utils = t.useUtils();
+
+  const { mutate: attemptOAuth, isLoading } =
+    t.oauth.attemptOAuth.useMutation();
 
   const isExpanded = useObservable(false);
   const isExpandedValue = isExpanded.get();
 
   const transferState = transferState$.providers.get();
+  const selectedPlayLists = useObservable(new Set<string>());
 
   console.log(transferState);
+  const authenticated = authenticated$.providers.has(provider);
+
+  console.log({ authenticated });
+
+  const { data, isLoading: gettingYTPlaylist } =
+    t.youtube.getPlaylists.useQuery(undefined, {
+      enabled: provider === "youtube" && authenticated && isExpandedValue,
+    });
 
   const memoAuth = useCallback(
     (provider: Provider) => attemptOAuth({ provider }),
@@ -45,16 +62,35 @@ const ProviderCard = memo(({ provider }: Props) => {
     [transferState, provider],
   );
 
+  const selectPlaylist = useCallback(
+    (title: string) =>
+      selectedPlayLists.get().has(title)
+        ? selectedPlayLists.get().delete(title)
+        : selectedPlayLists.get().add(title),
+    [selectedPlayLists],
+  );
+
   const removeProviderFromStage = () => {
     stage$.providers.delete(provider);
     return;
   };
 
+  t.oauth.awaitOAuthAttempt.useSubscription(undefined, {
+    onData: (data) => {
+      console.log(data);
+      authenticated$.providers.set(data.provider, {
+        provider: data.provider,
+        authenticated: data.successful,
+      });
+      utils.oauth.invalidate();
+    },
+  });
+
   return (
     <motion.div
       initial={false}
       animate={{
-        height: isExpandedValue ? "68%" : "9%",
+        height: isExpandedValue ? "68%" : "9.5%",
       }}
       transition={{ duration: 0.5 }}
       className="overflow-hidden relative shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
@@ -125,7 +161,12 @@ const ProviderCard = memo(({ provider }: Props) => {
               direction="column"
               className="w-full h-full px-2 py-2"
             >
-              <Flex width="100%" align="center" justify="between">
+              <Flex
+                width="100%"
+                align="center"
+                className="mt-1"
+                justify="between"
+              >
                 <Text weight="bold" size="2">
                   My {capitalize(provider)} Library
                 </Text>
@@ -144,6 +185,37 @@ const ProviderCard = memo(({ provider }: Props) => {
                   </Select.Content>
                 </Select.Root>
               </Flex>
+              {gettingYTPlaylist && (
+                <Flex
+                  grow="1"
+                  align="center"
+                  justify="center"
+                  direction="column"
+                  gap="1"
+                >
+                  <Spinner size={22} />
+                  <Text size="1" color="gray">
+                    Getting your playlists
+                  </Text>
+                </Flex>
+              )}
+              <ScrollArea className="mt-2">
+                {data?.playlists?.map((list, idx) => (
+                  <Flex
+                    key={`${list.title}__${idx}`}
+                    align="center"
+                    justify="between"
+                    className="py-1"
+                  >
+                    <Text size="2">{list.title}</Text>
+                    <Checkbox
+                      checked={selectedPlayLists.has(list.title!)}
+                      variant="soft"
+                      onClick={() => selectPlaylist(list.title!)}
+                    />
+                  </Flex>
+                ))}
+              </ScrollArea>
             </Flex>
           </motion.div>
         )}
