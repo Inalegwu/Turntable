@@ -67,6 +67,20 @@ export default function Layout({ children }: LayoutProps) {
           width="100%"
           className="absolute px-3 py-2"
         >
+          <button
+            onClick={() =>
+              globalState$.colorMode.set(
+                globalState$.colorMode.get() === "dark" ? "light" : "dark",
+              )
+            }
+            className="px-2 py-1"
+          >
+            <Icon
+              className={colorMode === "dark" ? "text-white" : "text-black"}
+              name={globalState$.colorMode.get() === "dark" ? "Sun" : "Moon"}
+              size={10}
+            />
+          </button>
           <Flex
             id="drag-region"
             grow="1"

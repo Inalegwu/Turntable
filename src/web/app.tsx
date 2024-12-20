@@ -44,7 +44,9 @@ if (!rootElement?.innerHTML) {
       <t.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <Theme
-            appearance={globalState$.colorMode.get()}
+            appearance={
+              globalState$.colorMode.get() === "dark" ? "dark" : "light"
+            }
             radius="large"
             accentColor="gray"
             grayColor="sand"

@@ -98,13 +98,13 @@ const ProviderCard = memo(({ provider }: Props) => {
       className="overflow-hidden relative shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
     >
       <Flex
-        className="px-2 py-3 absolute top-0 left-0 w-full bg-white border-b-neutral-200/9 border-b-solid border-b-1"
+        className="px-2 py-3 absolute top-0 left-0 w-full bg-white dark:bg-neutral-950 border-b-neutral-200/9 dark:border-b-neutral-600/20 border-b-solid border-b-1"
         gap="3"
         align="center"
         justify="between"
       >
         <Flex align="center" gap="2">
-          <Flex className="bg-neutral-500/10 rounded-md p-1 border-1 border-neutral-300/20 border-solid">
+          <Flex className="bg-neutral-500/10 dark:bg-neutral-700/35 rounded-md p-1 border-1 border-neutral-300/20 border-solid">
             <img
               src={findProviderIcon(provider)}
               alt={`${provider}__logo`}
@@ -155,7 +155,7 @@ const ProviderCard = memo(({ provider }: Props) => {
             initial={{ opacity: 0, height: "0%" }}
             animate={{ opacity: 1, height: "100%" }}
             exit={{ opacity: 0 }}
-            className="w-full mt-10 pt-3 bg-neutral-50/80"
+            className="w-full mt-10 pt-3 grow-1 bg-neutral-50/80 dark:bg-neutral-900"
             transition={{ duration: 0.5 }}
           >
             <Flex
@@ -191,6 +191,7 @@ const ProviderCard = memo(({ provider }: Props) => {
                 <Flex
                   grow="1"
                   align="center"
+                  className="w-full h-full"
                   justify="center"
                   direction="column"
                   gap="1"

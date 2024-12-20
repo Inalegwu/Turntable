@@ -15,7 +15,6 @@ export const youtube = router({
         return {
             playlists: data.items?.map((item) => ({
                 title: item.snippet?.title,
-                desc: item.snippet?.description,
             })),
         };
     }),

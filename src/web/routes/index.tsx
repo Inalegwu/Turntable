@@ -22,10 +22,19 @@ function Index() {
       {stage.length === 0 && (
         <Flex direction="column" align="center" gap="3">
           <Flex direction="column" align="center" justify="center">
-            <Text size="6" weight="bold">
+            <Text
+              className="text-black dark:text-white"
+              color="gray"
+              size="6"
+              weight="bold"
+            >
               Stage is currently empty
             </Text>
-            <Text size="3" weight="medium" color="gray">
+            <Text
+              size="3"
+              weight="medium"
+              className="text-neutral-400 dark:text-neutral-9s00"
+            >
               Add apps to begin transferring
             </Text>
           </Flex>
