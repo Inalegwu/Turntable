@@ -25,4 +25,9 @@ declare global {
     providers: Map<Provider, State>;
     items: Array<string>;
   };
+
+  export type GoogleAuthChannel={
+    token:unknown;
+  }
+
 }

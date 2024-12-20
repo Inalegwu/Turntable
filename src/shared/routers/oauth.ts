@@ -1,9 +1,15 @@
 import { Env } from "@src/env";
 import { publicProcedure, router } from "@src/trpc";
+import { BroadcastChannel } from "broadcast-channel";
 import { Micro } from "effect";
 import { shell } from "electron";
 import { z } from "zod";
+import { googleOAuthClient } from "../context";
 import { Provider } from "../validations";
+
+const googleAuthChannel = new BroadcastChannel<GoogleAuthChannel>(
+    "google-auth-channel",
+);
 
 export const oauth = router({
     attemptOAuth: publicProcedure
@@ -26,7 +32,7 @@ function handleOAuth(provider: Provider) {
                         response_type: "code",
                         client_id: Env.SPOTIFY_CLIENT_ID,
                         scope: "user-read-private user-read-email",
-                        redirect_uri: "http://127.0.0.1:42069/oauthredirect",
+                        redirect_uri: "http://localhost:42069/callback",
                     });
 
                     const url = new URL(
@@ -35,29 +41,41 @@ function handleOAuth(provider: Provider) {
 
                     shell.openExternal(url.toString());
 
-                    // authWindow.loadURL(url.toString());
-
-                    // const {
-                    //     session: { webRequest },
-                    // } = authWindow.webContents;
-                    // const filter = {
-                    //     urls: ["http://127.0.0.1:42069/oauthredirect/*"],
-                    // };
-                    // webRequest.onBeforeRequest(filter, async ({ url }) => {
-                    //     const parsedUrl = new URL(url);
-                    //     authWindow.close();
-                    //     const code = parsedUrl.searchParams.get("code");
-                    //     // Do the rest of the authorization flow with the code.
-                    //     console.log({ code });
-                    // });
-
                     return {
                         status: "failed" as "failed" | "succeeded",
                     };
                 }
-                case "youtube":
+                case "youtube": {
+                    console.log(Env.GOOGLE_AUTH_SCOPES.split(","));
+
+                    var token: string | null = null;
+
+                    const url = googleOAuthClient.generateAuthUrl({
+                        client_id: Env.GOOGLE_CLIENT_ID,
+                        access_type: "offline",
+                        scope: Env.GOOGLE_AUTH_SCOPES.split(","),
+                        response_type: "code",
+                        redirect_uri: "http://localhost:42069/googleredirect",
+                    });
+
+                    shell.openExternal(url);
+
+                    googleAuthChannel.onmessage = (e) => {
+                        console.log(e.token);
+                        token = e.token as string;
+                    };
+
+                    return {
+                        status: "successful",
+                        token,
+                    };
+                }
             }
         },
         catch: (e) => new Error(String(e)),
     });
 }
+
+googleAuthChannel.onmessage = (e) => {
+    console.log(e.token);
+};
