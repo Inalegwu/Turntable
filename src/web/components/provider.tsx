@@ -31,6 +31,8 @@ const ProviderCard = memo(({ provider }: Props) => {
   const transferState = transferState$.providers.get();
   const selectedPlayLists = useObservable(new Set<string>());
 
+  console.log(selectedPlayLists.get().entries());
+
   console.log(transferState);
   const authenticated = authenticated$.providers.has(provider);
 
@@ -209,7 +211,8 @@ const ProviderCard = memo(({ provider }: Props) => {
                   >
                     <Text size="2">{list.title}</Text>
                     <Checkbox
-                      checked={selectedPlayLists.has(list.title!)}
+                      defaultChecked={selectedPlayLists.has(list.title!)}
+                      onCheckedChange={(e) => selectPlaylist(list.title!)}
                       variant="soft"
                       onClick={() => selectPlaylist(list.title!)}
                     />

@@ -59,8 +59,6 @@ const router = HttpRouter.empty.pipe(
                 );
             }
 
-            yield* Effect.logInfo({ url });
-
             googleAuthChannel.postMessage({
                 code,
             });
