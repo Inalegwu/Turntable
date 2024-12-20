@@ -54,23 +54,25 @@ const ProviderCard = memo(({ provider }: Props) => {
     <motion.div
       initial={false}
       animate={{
-        height: isExpandedValue ? "66.666667%" : "8%",
+        height: isExpandedValue ? "68%" : "9%",
       }}
       transition={{ duration: 0.5 }}
-      className="bg-neutral-50/80 overflow-hidden shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
+      className="overflow-hidden relative shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
     >
       <Flex
-        className="px-2 py-3 fixed w-91.4"
+        className="px-2 py-3 absolute top-0 left-0 w-full bg-white border-b-neutral-200/9 border-b-solid border-b-1"
         gap="3"
         align="center"
         justify="between"
       >
         <Flex align="center" gap="2">
-          <img
-            src={findProviderIcon(provider)}
-            alt={`${provider}__logo`}
-            className="w-5 h-5"
-          />
+          <Flex className="bg-neutral-500/10 rounded-md p-1 border-1 border-neutral-300/20 border-solid">
+            <img
+              src={findProviderIcon(provider)}
+              alt={`${provider}__logo`}
+              className="w-5.5 h-5.5"
+            />
+          </Flex>
           <Text size="2" weight="bold">
             {capitalize(provider)}
           </Text>
@@ -115,7 +117,7 @@ const ProviderCard = memo(({ provider }: Props) => {
             initial={{ opacity: 0, height: "0%" }}
             animate={{ opacity: 1, height: "100%" }}
             exit={{ opacity: 0 }}
-            className="w-full pt-10"
+            className="w-full mt-10 pt-3 bg-neutral-50/80"
             transition={{ duration: 0.5 }}
           >
             <Flex

@@ -8,10 +8,14 @@ export const googleOAuthClient = new google.auth.OAuth2(
   Env.GOOGLE_CLIENT_ID,
   Env.GOOGLE_CLIENT_SECRET,
   "http://localhost:42069/googleredirect",
-);  
+);
 
-const youtube=google.youtube({
-  version:"v3"
+google.options({
+  auth: googleOAuthClient,
+});
+
+const youtube = google.youtube({
+  version: "v3",
 });
 
 export async function createContext() {
@@ -20,7 +24,7 @@ export async function createContext() {
   return {
     window: browserWindow,
     store,
-    youtube
+    youtube,
   };
 }
 

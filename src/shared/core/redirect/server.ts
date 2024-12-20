@@ -26,14 +26,9 @@ const router = HttpRouter.empty.pipe(
         "/callback",
         Effect.gen(function* () {
             const request = yield* HttpServerRequest.HttpServerRequest;
+            const url = new URL(request.url);
 
-            yield* Effect.logInfo(request);
-
-            const urlParams = yield* request.urlParamsBody;
-
-            yield* Effect.logInfo(urlParams);
-
-            const searchParams = new URLSearchParams();
+            yield* Effect.logInfo(url);
 
             return yield* HttpServerResponse.json({
                 success: true,
@@ -43,7 +38,6 @@ const router = HttpRouter.empty.pipe(
     HttpRouter.get(
         "/googleredirect",
         Effect.gen(function* () {
-            yield* Effect.logInfo("Recieved request");
             const request = yield* HttpServerRequest.HttpServerRequest;
 
             const url = new URL(request.url);

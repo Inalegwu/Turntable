@@ -64,6 +64,8 @@ function handleOAuth(provider: Provider) {
                             e.code,
                         );
 
+                        console.log(tokens);
+
                         googleOAuthClient.setCredentials(tokens);
 
                         authenticated$.providers.set("youtube", {
@@ -79,5 +81,9 @@ function handleOAuth(provider: Provider) {
             }
         },
         catch: (e) => new Error(String(e)),
-    });
+    }).pipe(
+        Micro.tapError((e) =>
+            Micro.sync(() => console.log(e.name, e.cause, e.message))
+        ),
+    );
 }
