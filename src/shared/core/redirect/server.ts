@@ -22,7 +22,7 @@ const router = HttpRouter.empty.pipe(
         "/callback",
         Effect.gen(function* () {
             const request = yield* HttpServerRequest.HttpServerRequest;
-            const url = new URL(request.url);
+            const url = new URL(`http://localhost:42069/${request.url}`);
 
             yield* Effect.logInfo(url);
 

@@ -1,7 +1,6 @@
 import { googleAuthChannel, spotifyAuthChannel } from "@shared/channels";
 import { Env } from "@src/env";
 import { publicProcedure, router } from "@src/trpc";
-import { authenticated$ } from "@src/web/state";
 import { observable } from "@trpc/server/observable";
 import { Micro } from "effect";
 import { shell } from "electron";
@@ -23,10 +22,19 @@ export const oauth = router({
         observable<{ provider: Provider; successful: boolean }>((emit) => {
             // spotifyOAuthChannel.onMessage=(e)=>{};
 
+            // await success from redirect server for spotify
+            spotifyAuthChannel.onmessage = (e) => {
+                console.log(e.token);
+
+                emit.next({
+                    provider: "spotify",
+                    successful: true,
+                });
+            };
+
+            // await success from redirect server for spotify
             googleAuthChannel.onmessage = async (e) => {
-                const { tokens } = await googleOAuthClient.getToken(
-                    e.code,
-                );
+                const { tokens } = await googleOAuthClient.getToken(e.code);
 
                 googleOAuthClient.setCredentials(tokens);
 
@@ -36,8 +44,7 @@ export const oauth = router({
                 });
             };
 
-            return () => {
-            };
+            return () => {};
         })
     ),
 });
@@ -59,20 +66,7 @@ function handleOAuth(provider: Provider) {
                     );
 
                     shell.openExternal(url.toString());
-
-                    spotifyAuthChannel.onmessage = (e) => {
-                        console.log(e.token);
-
-                        authenticated$.providers.set(provider, {
-                            provider,
-                            authenticated: true,
-                        });
-                    };
-
-                    return {
-                        sucessful: true,
-                        provider,
-                    };
+                    return;
                 }
                 case "youtube": {
                     const url = googleOAuthClient.generateAuthUrl({
@@ -85,31 +79,7 @@ function handleOAuth(provider: Provider) {
 
                     shell.openExternal(url);
 
-                    // googleAuthChannel.onmessage = async (e) => {
-                    //     const url = new URL(`http://localhost:42069${e.url}`);
-                    //     const code = url.searchParams.get("code");
-
-                    //     if (!code) {
-                    //         return {
-                    //             sucessful: false,
-                    //         };
-                    //     }
-
-                    //     console.log(code);
-
-                    //     const { tokens } = await googleOAuthClient.getToken(
-                    //         code,
-                    //     );
-
-                    //     console.log(tokens);
-
-                    //     googleOAuthClient.setCredentials(tokens);
-                    // };
-
-                    // return {
-                    //     sucessful: true,
-                    //     provider,
-                    // };
+                    return;
                 }
             }
         },
