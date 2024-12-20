@@ -2,6 +2,7 @@ import type {
   Provider as PValidator,
   State as SValidator,
 } from "@shared/validations";
+import type { AccessToken } from "@spotify/web-api-ts-sdk";
 import type { z } from "zod";
 
 declare global {
@@ -28,5 +29,9 @@ declare global {
 
   export type GoogleAuthChannel = {
     code: string;
+  };
+
+  export type SpotifyAuthChannel = {
+    token: AccessToken;
   };
 }

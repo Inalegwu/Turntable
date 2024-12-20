@@ -1,16 +1,13 @@
+import { googleAuthChannel, spotifyAuthChannel } from "@shared/channels";
 import { Env } from "@src/env";
 import { publicProcedure, router } from "@src/trpc";
 import { authenticated$ } from "@src/web/state";
-import { BroadcastChannel } from "broadcast-channel";
+import { observable } from "@trpc/server/observable";
 import { Micro } from "effect";
 import { shell } from "electron";
 import { z } from "zod";
 import { googleOAuthClient } from "../context";
 import { Provider } from "../validations";
-
-const googleAuthChannel = new BroadcastChannel<GoogleAuthChannel>(
-    "google-auth-channel",
-);
 
 export const oauth = router({
     attemptOAuth: publicProcedure
@@ -22,6 +19,27 @@ export const oauth = router({
         .mutation(async ({ input }) =>
             Micro.runPromise(handleOAuth(input.provider)).then((res) => res)
         ),
+    awaitOAuthAttempt: publicProcedure.subscription(() =>
+        observable<{ provider: Provider; successful: boolean }>((emit) => {
+            // spotifyOAuthChannel.onMessage=(e)=>{};
+
+            googleAuthChannel.onmessage = async (e) => {
+                const { tokens } = await googleOAuthClient.getToken(
+                    e.code,
+                );
+
+                googleOAuthClient.setCredentials(tokens);
+
+                emit.next({
+                    provider: "youtube",
+                    successful: true,
+                });
+            };
+
+            return () => {
+            };
+        })
+    ),
 });
 
 function handleOAuth(provider: Provider) {
@@ -42,13 +60,21 @@ function handleOAuth(provider: Provider) {
 
                     shell.openExternal(url.toString());
 
+                    spotifyAuthChannel.onmessage = (e) => {
+                        console.log(e.token);
+
+                        authenticated$.providers.set(provider, {
+                            provider,
+                            authenticated: true,
+                        });
+                    };
+
                     return {
-                        status: "failed" as "failed" | "succeeded",
+                        sucessful: true,
+                        provider,
                     };
                 }
                 case "youtube": {
-                    console.log(Env.GOOGLE_AUTH_SCOPES.split(","));
-
                     const url = googleOAuthClient.generateAuthUrl({
                         client_id: Env.GOOGLE_CLIENT_ID,
                         access_type: "offline",
@@ -59,24 +85,31 @@ function handleOAuth(provider: Provider) {
 
                     shell.openExternal(url);
 
-                    googleAuthChannel.onmessage = async (e) => {
-                        const { tokens } = await googleOAuthClient.getToken(
-                            e.code,
-                        );
+                    // googleAuthChannel.onmessage = async (e) => {
+                    //     const url = new URL(`http://localhost:42069${e.url}`);
+                    //     const code = url.searchParams.get("code");
 
-                        console.log(tokens);
+                    //     if (!code) {
+                    //         return {
+                    //             sucessful: false,
+                    //         };
+                    //     }
 
-                        googleOAuthClient.setCredentials(tokens);
+                    //     console.log(code);
 
-                        authenticated$.providers.set("youtube", {
-                            authenticated: true,
-                            provider: "youtube",
-                        });
-                    };
+                    //     const { tokens } = await googleOAuthClient.getToken(
+                    //         code,
+                    //     );
 
-                    return {
-                        status: "successful",
-                    };
+                    //     console.log(tokens);
+
+                    //     googleOAuthClient.setCredentials(tokens);
+                    // };
+
+                    // return {
+                    //     sucessful: true,
+                    //     provider,
+                    // };
                 }
             }
         },

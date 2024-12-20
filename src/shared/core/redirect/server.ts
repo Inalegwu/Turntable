@@ -5,15 +5,11 @@ import {
     HttpServerResponse,
 } from "@effect/platform";
 import { NodeHttpServer } from "@effect/platform-node";
+import { googleAuthChannel, spotifyAuthChannel } from "@shared/channels";
 import type { AccessToken } from "@spotify/web-api-ts-sdk";
 import { Env } from "@src/env";
-import { BroadcastChannel } from "broadcast-channel";
 import { Effect, Encoding, Layer } from "effect";
 import { createServer } from "node:http";
-
-const googleAuthChannel = new BroadcastChannel<GoogleAuthChannel>(
-    "google-auth-channel",
-);
 
 const router = HttpRouter.empty.pipe(
     HttpRouter.get(
@@ -30,6 +26,20 @@ const router = HttpRouter.empty.pipe(
 
             yield* Effect.logInfo(url);
 
+            const code = url.searchParams.get("code");
+
+            if (!code) {
+                return yield* HttpServerResponse.json({
+                    successful: false,
+                });
+            }
+
+            const token = yield* getSpotifyAccessToken(code);
+
+            spotifyAuthChannel.postMessage({
+                token,
+            });
+
             return yield* HttpServerResponse.json({
                 success: true,
             });
@@ -40,25 +50,24 @@ const router = HttpRouter.empty.pipe(
         Effect.gen(function* () {
             const request = yield* HttpServerRequest.HttpServerRequest;
 
-            const url = new URL(request.url);
-
+            const url = new URL(`http://localhost:42069/${request.url}`);
             const code = url.searchParams.get("code");
 
-            console.log(code);
-
             if (!code) {
-                return yield* HttpServerResponse.json({
-                    success: false,
-                });
+                return yield* HttpServerResponse.text(
+                    "Connect YouTube account failed",
+                );
             }
+
+            yield* Effect.logInfo({ url });
 
             googleAuthChannel.postMessage({
                 code,
             });
 
-            return yield* HttpServerResponse.json({
-                success: true,
-            });
+            return yield* HttpServerResponse.text(
+                "Connected YouTube Account Successfully",
+            );
         }),
     ),
 );
@@ -67,6 +76,7 @@ const App = router.pipe(
     Effect.annotateLogs({
         service: "oauth-redirect-server",
     }),
+    Effect.tapError((e) => Effect.logError(e.toString())),
     HttpServer.serve(),
 );
 
@@ -111,12 +121,17 @@ function getSpotifyAccessToken(code: string) {
 }
 
 function encodeFormData(data: object) {
-    return Object.keys(data).map(
-        // @ts-expect-error
-        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`,
-    ).join("&");
+    return Object.keys(data)
+        .map(
+            (key) =>
+                // @ts-expect-error
+                `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`,
+        )
+        .join("&");
 }
 
 export const Server = {
-    Live: Layer.provide(App, Live),
+    Live: Layer.provide(App, Live).pipe(
+        Layer.tapError((e) => Effect.logError(e)),
+    ),
 };
