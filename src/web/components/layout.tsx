@@ -1,11 +1,18 @@
 import { Icon } from "@components/index";
 import { useObserveEffect } from "@legendapp/state/react";
-import { Button, DropdownMenu, Flex, Text } from "@radix-ui/themes";
+import {
+  Button,
+  Dialog,
+  DropdownMenu,
+  Flex,
+  Heading,
+  Text,
+} from "@radix-ui/themes";
 import t from "@shared/config";
 import { capitalize, providers } from "@src/shared/utils";
 import { AnimatePresence } from "motion/react";
 import type React from "react";
-import { useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { globalState$, stage$ } from "../state";
 
 type LayoutProps = {
@@ -67,20 +74,23 @@ export default function Layout({ children }: LayoutProps) {
           width="100%"
           className="absolute px-3 py-2"
         >
-          <button
-            onClick={() =>
-              globalState$.colorMode.set(
-                globalState$.colorMode.get() === "dark" ? "light" : "dark",
-              )
-            }
-            className="px-2 py-1"
-          >
-            <Icon
-              className={colorMode === "dark" ? "text-white" : "text-black"}
-              name={globalState$.colorMode.get() === "dark" ? "Sun" : "Moon"}
-              size={10}
-            />
-          </button>
+          <Flex align="center" justify="start" gap="2">
+            <button
+              onClick={() =>
+                globalState$.colorMode.set(
+                  globalState$.colorMode.get() === "dark" ? "light" : "dark",
+                )
+              }
+              className="px-2 py-1"
+            >
+              <Icon
+                className={colorMode === "dark" ? "text-white" : "text-black"}
+                name={globalState$.colorMode.get() === "dark" ? "Sun" : "Moon"}
+                size={10}
+              />
+            </button>
+            <InfoButton />
+          </Flex>
           <Flex
             id="drag-region"
             grow="1"
@@ -143,3 +153,33 @@ export default function Layout({ children }: LayoutProps) {
     </AnimatePresence>
   );
 }
+
+const InfoButton = memo(() => {
+  const colorMode = globalState$.colorMode.get();
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger>
+        <button className="px-2 py-1">
+          <Icon
+            className={colorMode === "dark" ? "text-white" : "text-black"}
+            name="Info"
+            size={10}
+          />
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Content>
+        <Flex direction="column" gap="3" align="start">
+          <Heading>About</Heading>
+          <Text size="3">
+            TurnTable is designed to ease migration from various music streaming
+            services
+          </Text>
+          <Text size="3">
+            &copy; 2024 <Text color="violet">DisgruntledDevs</Text>
+          </Text>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
+  );
+});
