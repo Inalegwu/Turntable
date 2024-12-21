@@ -22,8 +22,7 @@ type Props = {
 const ProviderCard = memo(({ provider }: Props) => {
   const utils = t.useUtils();
 
-  const { mutate: attemptOAuth, isLoading } =
-    t.oauth.attemptOAuth.useMutation();
+  const { mutate, isLoading } = t.oauth.attemptOAuth.useMutation();
 
   const isExpanded = useObservable(false);
   const isExpandedValue = isExpanded.get();
@@ -31,12 +30,7 @@ const ProviderCard = memo(({ provider }: Props) => {
   const transferState = transferState$.providers.get();
   const selectedPlayLists = useObservable(new Set<string>());
 
-  console.log(selectedPlayLists.get().entries());
-
-  console.log(transferState);
   const authenticated = authenticated$.providers.has(provider);
-
-  console.log({ authenticated });
 
   const { data, isLoading: gettingYTPlaylist } =
     t.youtube.getPlaylists.useQuery(undefined, {
@@ -44,8 +38,8 @@ const ProviderCard = memo(({ provider }: Props) => {
     });
 
   const memoAuth = useCallback(
-    (provider: Provider) => attemptOAuth({ provider }),
-    [attemptOAuth],
+    (provider: Provider) => mutate({ provider }),
+    [mutate],
   );
 
   const addToTransferState = useCallback(

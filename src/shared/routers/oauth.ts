@@ -1,12 +1,12 @@
 import { googleAuthChannel, spotifyAuthChannel } from "@shared/channels";
+import { googleOAuthClient } from "@shared/context";
+import { Provider } from "@shared/validations";
 import { Env } from "@src/env";
 import { publicProcedure, router } from "@src/trpc";
 import { observable } from "@trpc/server/observable";
 import { Micro } from "effect";
 import { shell } from "electron";
 import { z } from "zod";
-import { googleOAuthClient } from "../context";
-import { Provider } from "../validations";
 
 export const oauth = router({
     attemptOAuth: publicProcedure
@@ -20,8 +20,6 @@ export const oauth = router({
         ),
     awaitOAuthAttempt: publicProcedure.subscription(() =>
         observable<{ provider: Provider; successful: boolean }>((emit) => {
-            // spotifyOAuthChannel.onMessage=(e)=>{};
-
             // await success from redirect server for spotify
             spotifyAuthChannel.onmessage = (e) => {
                 console.log(e.token);
