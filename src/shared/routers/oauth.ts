@@ -86,5 +86,6 @@ function handleOAuth(provider: Provider) {
         Micro.tapError((e) =>
             Micro.sync(() => console.log(e.name, e.cause, e.message))
         ),
+        Micro.catchAll((e)=>Micro.sync(()=>console.log(e)))
     );
 }
