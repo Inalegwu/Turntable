@@ -9,7 +9,7 @@ import {
 import t from "@src/shared/config";
 import { capitalize, findProviderIcon } from "@src/shared/utils";
 import { AnimatePresence, motion } from "motion/react";
-import { memo, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { appState, stage, transfers } from "../state";
 import Icon from "./icon";
 import Spinner from "./spinner";
@@ -18,7 +18,7 @@ type Props = {
   provider: Provider;
 };
 
-const ProviderCard = memo(({ provider }: Props) => {
+const ProviderCard = ({ provider }: Props) => {
   const { mutate, isLoading } = t.oauth.attemptOAuth.useMutation();
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,7 +35,7 @@ const ProviderCard = memo(({ provider }: Props) => {
       enabled: provider === "youtube" && authenticated && isExpanded,
     });
 
-  const memoAuth = useCallback(
+  const attemptOAuth = useCallback(
     (provider: Provider) => mutate({ provider }),
     [mutate],
   );
@@ -96,7 +96,7 @@ const ProviderCard = memo(({ provider }: Props) => {
               className="w-5.5 h-5.5"
             />
           </Flex>
-          <Text size="2" weight="bold">
+          <Text size="2" weight="medium">
             {capitalize(provider)}
           </Text>
         </Flex>
@@ -107,9 +107,9 @@ const ProviderCard = memo(({ provider }: Props) => {
               className="cursor-pointer"
               variant="soft"
               color="gray"
-              onClick={() => memoAuth(provider)}
+              onClick={() => attemptOAuth(provider)}
             >
-              <Text weight="bold">Connect Account</Text>
+              <Text weight="medium">Connect Account</Text>
               {isLoading && <Spinner size={4} />}
             </Button>
           )}
@@ -120,8 +120,9 @@ const ProviderCard = memo(({ provider }: Props) => {
             onClick={() => setIsExpanded((isExpanded) => !isExpanded)}
           >
             <motion.div
+              className="flex items-center justify-center"
               animate={{
-                rotateZ: isExpanded ? "180deg" : "360deg",
+                rotateZ: isExpanded ? "180deg" : "-180deg",
               }}
             >
               <Icon name={isExpanded ? "ChevronUp" : "ChevronDown"} size={11} />
@@ -157,7 +158,7 @@ const ProviderCard = memo(({ provider }: Props) => {
                 className="mt-1"
                 justify="between"
               >
-                <Text weight="bold" size="2">
+                <Text weight="medium" size="2">
                   My {capitalize(provider)} Library
                 </Text>
                 <Select.Root
@@ -185,7 +186,7 @@ const ProviderCard = memo(({ provider }: Props) => {
                   gap="1"
                 >
                   <Spinner size={22} />
-                  <Text size="1" color="gray">
+                  <Text size="1" weight="medium" color="gray">
                     Getting your playlists
                   </Text>
                 </Flex>
@@ -214,6 +215,6 @@ const ProviderCard = memo(({ provider }: Props) => {
       </AnimatePresence>
     </motion.div>
   );
-});
+};
 
 export default ProviderCard;

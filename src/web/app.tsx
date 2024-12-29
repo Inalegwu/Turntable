@@ -12,8 +12,6 @@ import ReactDOM from "react-dom/client";
 import "virtual:uno.css";
 import "./defaults.css";
 import { routeTree } from "./routeTree.gen";
-import { globalState$ } from "./state";
-;
 
 const history = createHashHistory({});
 const router = createRouter({ routeTree, history });
@@ -33,12 +31,7 @@ if (!rootElement?.innerHTML) {
     <StrictMode>
       <t.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
-          <Theme
-            appearance={globalState$.colorMode.get()}
-            radius="large"
-            accentColor="gray"
-            grayColor="sand"
-          >
+          <Theme radius="large" accentColor="gray" grayColor="sand">
             <RouterProvider router={router} />
           </Theme>
         </QueryClientProvider>

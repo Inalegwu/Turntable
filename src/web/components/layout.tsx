@@ -25,18 +25,12 @@ export default function Layout({ children }: LayoutProps) {
 
   const addProviderToStage = useCallback(
     (provider: Provider) => {
-      if (stage.length === 2 && !stageState.has(provider)) {
-        console.log("max reached");
-        return;
-      }
-
       if (stageState.has(provider)) {
         stageState.delete(provider);
         return;
       }
 
       stageState.add(provider);
-      return;
     },
     [stageState],
   );
@@ -158,17 +152,19 @@ const InfoButton = memo(() => {
         </button>
       </Dialog.Trigger>
       <Dialog.Content aria-description="about">
-        <Flex direction="column" gap="3" align="start">
+        <Flex direction="column" gap="1" align="start">
           <Dialog.Title>
             <Text>About</Text>
           </Dialog.Title>
-          <Text size="3">
-            TurnTable is designed to ease migration from various music streaming
-            services
-          </Text>
-          <Text size="3">
-            &copy; 2024 <Text color="violet">DisgruntledDevs</Text>
-          </Text>
+          <Flex direction="column">
+            <Text size="3">
+              Turntable is designed to ease migration from various music
+              streaming services
+            </Text>
+            <Text size="1" color="gray">
+              &copy; 2024 <Text color="violet">DisgruntledDevs</Text>
+            </Text>
+          </Flex>
         </Flex>
       </Dialog.Content>
     </Dialog.Root>

@@ -12,6 +12,8 @@ export const Route = createFileRoute("/")({
 function Index() {
   const _stage = Array.from(stage.use.providers().values());
 
+  console.log(_stage);
+
   return (
     <Flex
       align="center"
@@ -42,7 +44,7 @@ function Index() {
       ))}
       {stage.length === 1 && (
         <Flex className="w-2/6" align="center" justify="center">
-          <Text weight="bold">Add one more to get started</Text>
+          <Text weight="medium">Add one more to get started</Text>
         </Flex>
       )}
     </Flex>

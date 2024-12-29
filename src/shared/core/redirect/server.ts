@@ -1,4 +1,5 @@
 import {
+    FileSystem,
     HttpRouter,
     HttpServer,
     HttpServerRequest,
@@ -21,6 +22,7 @@ const router = HttpRouter.empty.pipe(
     HttpRouter.get(
         "/callback",
         Effect.gen(function* () {
+            const fs = yield* FileSystem.FileSystem;
             const request = yield* HttpServerRequest.HttpServerRequest;
             const url = new URL(`http://localhost:42069/${request.url}`);
 

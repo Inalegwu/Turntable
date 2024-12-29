@@ -40,7 +40,7 @@ const createWindow = () => {
     start: true,
   });
 
-  // mainWindow.webContents.openDevTools({ mode: "bottom" });
+  mainWindow.webContents.openDevTools({ mode: "bottom" });
 };
 
 app.whenReady().then(() => {
