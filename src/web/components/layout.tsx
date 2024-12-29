@@ -1,8 +1,7 @@
 import { Icon } from "@components/index";
-import { useObserveEffect } from "@legendapp/state/react";
 import { Button, Dialog, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import t from "@shared/config";
-import { capitalize, providers } from "@src/shared/utils";
+import { capitalize, generateId, providers } from "@src/shared/utils";
 import { AnimatePresence } from "motion/react";
 import type React from "react";
 import { memo, useCallback, useEffect } from "react";
@@ -19,6 +18,7 @@ export default function Layout({ children }: LayoutProps) {
   const colorMode = appState.use.colorMode();
   const firstLaunch = appState.use.firstLaunch();
   const toggleColorMode = appState.use.toggleColorMode();
+  const setAppId = appState.use.setAppId();
 
   const stageState = stage.use.providers();
   const _stage = Array.from(stageState.values());
@@ -41,18 +41,19 @@ export default function Layout({ children }: LayoutProps) {
     [stageState],
   );
 
-  useObserveEffect(() => {
-    if (firstLaunch) {
-    }
-  });
-
   useEffect(() => {
     if (colorMode === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [colorMode]);
+
+    (() => {
+      if (firstLaunch) {
+        setAppId(generateId());
+      }
+    })();
+  }, [colorMode, firstLaunch, setAppId]);
 
   return (
     <AnimatePresence mode="wait" initial={true} presenceAffectsLayout>
