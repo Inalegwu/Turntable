@@ -10,6 +10,20 @@ declare global {
     colorMode: "dark" | "light";
     appId: string | null;
     firstLaunch: boolean;
+    toggleColorMode: () => void;
+    setAppId: (id: string) => void;
+    authenticatedProviders: Map<Provider, {
+      authenticated: boolean;
+    }>;
+    addAuthenticatedProviders: (
+      provider: Provider,
+      authenticated: boolean,
+    ) => void;
+  };
+
+  export type Stage = {
+    providers: Set<Provider>;
+    addProvider: (provider: Provider) => void;
   };
 
   export type Provider = z.infer<typeof PValidator>;
@@ -25,6 +39,8 @@ declare global {
   export type TransferState = {
     providers: Map<Provider, State>;
     items: Array<string>;
+    addProvider: (provider: Provider, state: State) => void;
+    addPlaylists: (list: Array<string>) => void;
   };
 
   export type GoogleAuthChannel = {

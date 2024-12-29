@@ -1,6 +1,3 @@
-import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
-import { configureObservablePersistence } from "@legendapp/state/persist";
-import { ObservablePersistLocalStorage } from "@legendapp/state/persist-plugins/local-storage";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import t, { queryClient, trpcClient } from "@shared/config";
@@ -16,14 +13,7 @@ import "virtual:uno.css";
 import "./defaults.css";
 import { routeTree } from "./routeTree.gen";
 import { globalState$ } from "./state";
-
-enableReactTracking({
-  auto: true,
-});
-
-configureObservablePersistence({
-  pluginLocal: ObservablePersistLocalStorage,
-});
+;
 
 const history = createHashHistory({});
 const router = createRouter({ routeTree, history });

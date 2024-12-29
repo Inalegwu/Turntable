@@ -1,19 +1,12 @@
 import { Icon } from "@components/index";
 import { useObserveEffect } from "@legendapp/state/react";
-import {
-  Button,
-  Dialog,
-  DropdownMenu,
-  Flex,
-  Heading,
-  Text,
-} from "@radix-ui/themes";
+import { Button, Dialog, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import t from "@shared/config";
 import { capitalize, providers } from "@src/shared/utils";
 import { AnimatePresence } from "motion/react";
 import type React from "react";
 import { memo, useCallback, useEffect } from "react";
-import { globalState$, stage$ } from "../state";
+import { appState, stage } from "../state";
 
 type LayoutProps = {
   children?: React.ReactNode;
@@ -23,41 +16,43 @@ export default function Layout({ children }: LayoutProps) {
   const { mutate: minimizeWindow } = t.window.minimize.useMutation();
   const { mutate: closeWindow } = t.window.closeWindow.useMutation();
 
-  const colorMode = globalState$.colorMode.get();
+  const colorMode = appState.use.colorMode();
+  const firstLaunch = appState.use.firstLaunch();
+  const toggleColorMode = appState.use.toggleColorMode();
 
-  const stage = Array.from(stage$.providers.get().values());
+  const stageState = stage.use.providers();
+  const _stage = Array.from(stageState.values());
 
   const addProviderToStage = useCallback(
     (provider: Provider) => {
-      if (stage.length === 2 && !stage$.providers.has(provider)) {
+      if (stage.length === 2 && !stageState.has(provider)) {
         console.log("max reached");
         return;
       }
 
-      if (stage$.providers.has(provider)) {
-        stage$.providers.delete(provider);
+      if (stageState.has(provider)) {
+        stageState.delete(provider);
         return;
       }
 
-      stage$.providers.add(provider);
+      stageState.add(provider);
       return;
     },
-    [stage],
+    [stageState],
   );
 
   useObserveEffect(() => {
-    if (globalState$.firstLaunch.get()) {
-      globalState$.appId.set(null);
+    if (firstLaunch) {
     }
   });
 
   useEffect(() => {
-    if (globalState$.colorMode.get() === "dark") {
+    if (colorMode === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, []);
+  }, [colorMode]);
 
   return (
     <AnimatePresence mode="wait" initial={true} presenceAffectsLayout>
@@ -75,17 +70,10 @@ export default function Layout({ children }: LayoutProps) {
           className="absolute px-3 py-2"
         >
           <Flex align="center" justify="start" gap="2">
-            <button
-              onClick={() =>
-                globalState$.colorMode.set(
-                  globalState$.colorMode.get() === "dark" ? "light" : "dark",
-                )
-              }
-              className="px-2 py-1"
-            >
+            <button onClick={() => toggleColorMode()} className="px-2 py-1">
               <Icon
                 className={colorMode === "dark" ? "text-white" : "text-black"}
-                name={globalState$.colorMode.get() === "dark" ? "Sun" : "Moon"}
+                name={colorMode === "dark" ? "Sun" : "Moon"}
                 size={10}
               />
             </button>
@@ -121,7 +109,7 @@ export default function Layout({ children }: LayoutProps) {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <Button size="1" variant="soft" className="cursor-pointer">
-                <Text weight="bold">Select a Provider</Text>
+                <Text>Select a Provider</Text>
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content size="1" variant="soft">
@@ -130,7 +118,7 @@ export default function Layout({ children }: LayoutProps) {
                 .map((provider) => (
                   <DropdownMenu.CheckboxItem
                     className="cursor-pointer"
-                    checked={!!stage$.providers.has(provider.provider)}
+                    checked={!!stageState.has(provider.provider)}
                     onClick={() => addProviderToStage(provider.provider)}
                     key={`${provider.provider}`}
                   >
@@ -155,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
 }
 
 const InfoButton = memo(() => {
-  const colorMode = globalState$.colorMode.get();
+  const colorMode = appState.use.colorMode();
 
   return (
     <Dialog.Root>
@@ -168,9 +156,11 @@ const InfoButton = memo(() => {
           />
         </button>
       </Dialog.Trigger>
-      <Dialog.Content>
+      <Dialog.Content aria-description="about">
         <Flex direction="column" gap="3" align="start">
-          <Heading>About</Heading>
+          <Dialog.Title>
+            <Text>About</Text>
+          </Dialog.Title>
           <Text size="3">
             TurnTable is designed to ease migration from various music streaming
             services

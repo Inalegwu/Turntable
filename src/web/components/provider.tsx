@@ -1,4 +1,3 @@
-import { useObservable } from "@legendapp/state/react";
 import {
   Button,
   Checkbox,
@@ -10,8 +9,8 @@ import {
 import t from "@src/shared/config";
 import { capitalize, findProviderIcon } from "@src/shared/utils";
 import { AnimatePresence, motion } from "motion/react";
-import { memo, useCallback } from "react";
-import { authenticated$, stage$, transferState$ } from "../state";
+import { memo, useCallback, useState } from "react";
+import { appState, stage, transfers } from "../state";
 import Icon from "./icon";
 import Spinner from "./spinner";
 
@@ -20,21 +19,20 @@ type Props = {
 };
 
 const ProviderCard = memo(({ provider }: Props) => {
-  const utils = t.useUtils();
-
   const { mutate, isLoading } = t.oauth.attemptOAuth.useMutation();
 
-  const isExpanded = useObservable(false);
-  const isExpandedValue = isExpanded.get();
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const transferState = transferState$.providers.get();
-  const selectedPlayLists = useObservable(new Set<string>());
+  const transferState = transfers.use.providers();
+  const _stage = stage.use.providers();
+  const authenticated = appState.use.authenticatedProviders();
+  const addAuthenticatedProvider = appState.use.addAuthenticatedProviders();
 
-  const authenticated = authenticated$.providers.has(provider);
+  const [selectedPlayLists, setSelectedPlaylists] = useState(new Set<string>());
 
   const { data, isLoading: gettingYTPlaylist } =
     t.youtube.getPlaylists.useQuery(undefined, {
-      enabled: provider === "youtube" && authenticated && isExpandedValue,
+      enabled: provider === "youtube" && authenticated && isExpanded,
     });
 
   const memoAuth = useCallback(
@@ -45,13 +43,13 @@ const ProviderCard = memo(({ provider }: Props) => {
   const addToTransferState = useCallback(
     (state: State) => {
       if (transferState.has(provider)) {
-        const v = transferState$.providers.get(provider);
-        if (v.get() === state) return;
-        transferState$.providers.delete(provider);
-        transferState$.providers.set(provider, state);
+        const v = transferState.get(provider);
+        if (v === state) return;
+        transferState.delete(provider);
+        transferState.set(provider, state);
       }
 
-      transferState$.providers.set(provider, state);
+      transferState.set(provider, state);
 
       return;
     },
@@ -60,25 +58,18 @@ const ProviderCard = memo(({ provider }: Props) => {
 
   const selectPlaylist = useCallback(
     (title: string) =>
-      selectedPlayLists.get().has(title)
-        ? selectedPlayLists.get().delete(title)
-        : selectedPlayLists.get().add(title),
-    [selectedPlayLists],
+      setSelectedPlaylists((selectedPlayLists) => selectedPlayLists.add(title)),
+    [],
   );
 
-  const removeProviderFromStage = () => {
-    stage$.providers.delete(provider);
+  const removeProviderFromStage = useCallback(() => {
+    _stage.delete(provider);
     return;
-  };
+  }, [provider, _stage]);
 
   t.oauth.awaitOAuthAttempt.useSubscription(undefined, {
     onData: (data) => {
-      console.log(data);
-      authenticated$.providers.set(data.provider, {
-        provider: data.provider,
-        authenticated: data.successful,
-      });
-      utils.oauth.invalidate();
+      addAuthenticatedProvider(data.provider, data.successful);
     },
   });
 
@@ -86,10 +77,10 @@ const ProviderCard = memo(({ provider }: Props) => {
     <motion.div
       initial={false}
       animate={{
-        height: isExpandedValue ? "68%" : "9.5%",
+        height: isExpanded ? "68%" : "9.5%",
       }}
       transition={{ duration: 0.5 }}
-      className="overflow-hidden relative shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-md"
+      className="overflow-hidden relative shadow shadow-sm border-1 border-solid border-neutral-400/10 w-3/6 rounded-lg"
     >
       <Flex
         className="px-2 py-3 absolute top-0 left-0 w-full bg-white dark:bg-neutral-950 border-b-neutral-200/9 dark:border-b-neutral-600/20 border-b-solid border-b-1"
@@ -110,7 +101,7 @@ const ProviderCard = memo(({ provider }: Props) => {
           </Text>
         </Flex>
         <Flex align="center" justify="end" gap="2">
-          {!authenticated$.providers.has(provider) && (
+          {!authenticated.has(provider) && (
             <Button
               size="1"
               className="cursor-pointer"
@@ -126,12 +117,15 @@ const ProviderCard = memo(({ provider }: Props) => {
             size="1"
             className="cursor-pointer"
             variant="soft"
-            onClick={() => isExpanded.set(!isExpandedValue)}
+            onClick={() => setIsExpanded((isExpanded) => !isExpanded)}
           >
-            <Icon
-              name={isExpandedValue ? "ChevronUp" : "ChevronDown"}
-              size={11}
-            />
+            <motion.div
+              animate={{
+                rotateZ: isExpanded ? "180deg" : "360deg",
+              }}
+            >
+              <Icon name={isExpanded ? "ChevronUp" : "ChevronDown"} size={11} />
+            </motion.div>
           </Button>
           <Button
             onClick={removeProviderFromStage}
@@ -144,7 +138,7 @@ const ProviderCard = memo(({ provider }: Props) => {
         </Flex>
       </Flex>
       <AnimatePresence initial={false} mode="wait" presenceAffectsLayout>
-        {isExpandedValue && (
+        {isExpanded && (
           <motion.div
             initial={{ opacity: 0, height: "0%" }}
             animate={{ opacity: 1, height: "100%" }}

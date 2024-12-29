@@ -3,14 +3,14 @@ import { capitalize, providers } from "@src/shared/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { memo, useCallback } from "react";
 import { ProviderCard } from "../components";
-import { stage$ } from "../state";
+import { stage } from "../state";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const stage = Array.from(stage$.providers.get().values());
+  const _stage = Array.from(stage.use.providers().values());
 
   return (
     <Flex
@@ -23,25 +23,21 @@ function Index() {
         <Flex direction="column" align="center" gap="3">
           <Flex direction="column" align="center" justify="center">
             <Text
+              weight="bold"
               className="text-black dark:text-white"
               color="gray"
               size="6"
-              weight="bold"
             >
               Stage is currently empty
             </Text>
-            <Text
-              size="3"
-              weight="medium"
-              className="text-neutral-400 dark:text-neutral-9s00"
-            >
+            <Text weight="medium" size="4" color="gray">
               Add apps to begin transferring
             </Text>
           </Flex>
           <SelectButton />
         </Flex>
       )}
-      {stage.map((provider) => (
+      {_stage.map((provider) => (
         <ProviderCard provider={provider} key={provider} />
       ))}
       {stage.length === 1 && (
@@ -54,31 +50,34 @@ function Index() {
 }
 
 const SelectButton = memo(() => {
-  const stage = Array.from(stage$.providers.get().values());
+  const stageState = stage.use.providers();
+  const _stage = Array.from(stageState);
 
   const addProviderToStage = useCallback(
     (provider: Provider) => {
-      if (stage.length === 2 && !stage$.providers.has(provider)) {
+      if (stage.length === 2 && !stageState.has(provider)) {
         console.log("max reached");
         return;
       }
 
-      if (stage$.providers.has(provider)) {
-        stage$.providers.delete(provider);
+      if (stageState.has(provider)) {
+        stageState.delete(provider);
         return;
       }
 
-      stage$.providers.add(provider);
+      stageState.add(provider);
       return;
     },
-    [stage],
+    [stageState],
   );
 
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <Button size="2" variant="soft" className="cursor-pointer">
-          <Text weight="bold">Select a Provider</Text>
+          <Text weight="medium" size="1">
+            Select a Provider
+          </Text>
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content size="2" variant="soft">

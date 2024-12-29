@@ -1,3 +1,4 @@
+import { NodeContext } from "@effect/platform-node";
 import { Effect, Layer } from "effect";
 import { Server } from "./server";
 
@@ -12,6 +13,7 @@ const make = Effect.gen(function* () {
 
 export const RedirectService = Layer.scopedDiscard(make).pipe(
     Layer.provide(Server.Live),
+    Layer.provide(NodeContext.layer),
     Layer.annotateLogs({
         service: "redirect-server",
     }),

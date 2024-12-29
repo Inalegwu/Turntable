@@ -9,3 +9,4 @@ out
 app_db
 .million
 .env
+spot-token.json

@@ -22,8 +22,6 @@ export const oauth = router({
         observable<{ provider: Provider; successful: boolean }>((emit) => {
             // await success from redirect server for spotify
             spotifyAuthChannel.onmessage = (e) => {
-                console.log(e.token);
-
                 emit.next({
                     provider: "spotify",
                     successful: true,
@@ -33,16 +31,21 @@ export const oauth = router({
             // await success from redirect server for spotify
             googleAuthChannel.onmessage = async (e) => {
                 const { tokens } = await googleOAuthClient.getToken(e.code);
-
                 googleOAuthClient.setCredentials(tokens);
-
                 emit.next({
                     provider: "youtube",
                     successful: true,
                 });
             };
 
-            return () => {};
+            return () => {
+                googleAuthChannel.removeEventListener("message", () => {
+                    return;
+                });
+                spotifyAuthChannel.removeEventListener("message", () => {
+                    return;
+                });
+            };
         })
     ),
 });
@@ -55,8 +58,14 @@ function handleOAuth(provider: Provider) {
                     const searchParams = new URLSearchParams({
                         response_type: "code",
                         client_id: Env.SPOTIFY_CLIENT_ID,
-                        scope: "user-read-private user-read-email",
-                        redirect_uri: "http://localhost:42069/callback",
+                        scope: encodeURIComponent(
+                            "user-read-private user-read-email",
+                        ),
+                        redirect_uri: encodeURIComponent(
+                            "http://localhost:42069/callback",
+                        ),
+                        state: "turntables",
+                        show_dialog: "true",
                     });
 
                     const url = new URL(
@@ -86,6 +95,6 @@ function handleOAuth(provider: Provider) {
         Micro.tapError((e) =>
             Micro.sync(() => console.log(e.name, e.cause, e.message))
         ),
-        Micro.catchAll((e)=>Micro.sync(()=>console.log(e)))
+        Micro.catchAll((e) => Micro.sync(() => console.log(e))),
     );
 }
